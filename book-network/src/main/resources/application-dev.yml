@@ -29,3 +29,9 @@ mail:
         connectiontimeout: 5000  # Définit le délai (en millisecondes) pour établir une connexion SMTP
         timeout: 3000  # Définit le délai d'attente pour les opérations SMTP avant l'expiration
         writetimeout: 5000  # Spécifie le délai d'attente pour l'écriture des données dans le flux de sortie SMTP
+
+application:
+  security:
+    jwt:
+      secret-key: nHfrJ1V2k0zP1Ac7JXmZ5E2xYBml1kYlK3H+le5N7CQ=
+      expiration: 8640000
