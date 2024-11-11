@@ -89,7 +89,7 @@ public class User implements UserDetails, Principal {
         return getEmail();
     }
 
-    private String fullName(){
+    public String fullName(){
         return getFirstName() + " " + getLastName();
     }
 }
