@@ -1,20 +1,32 @@
 /**
  * Configuration des beans pour la gestion de l'authentification et de l'encodage des mots de passe.
  *
- * Cette classe configure les composants nécessaires pour l'authentification des utilisateurs
- * et l'encodage de leurs mots de passe dans l'application Spring Security.
+ * Cette classe configure les composants nécessaires pour la sécurité de l'application en utilisant Spring Security,
+ * notamment le fournisseur d'authentification (`AuthenticationProvider`), l'encodeur de mots de passe (`PasswordEncoder`)
+ * et le gestionnaire d'authentification (`AuthenticationManager`).
+ *
+ * Les beans définis dans cette classe sont utilisés pour :
+ * - Fournir un service d'authentification basé sur les données de la base de données (`DaoAuthenticationProvider`).
+ * - Encoder les mots de passe des utilisateurs avec un algorithme de hachage sécurisé (`BCryptPasswordEncoder`).
+ * - Gérer le processus d'authentification des utilisateurs (`AuthenticationManager`).
  *
  * Annotations :
  * - @Configuration : Indique que cette classe contient des méthodes de configuration de beans Spring.
- * - @AllArgsConstructor : Génère un constructeur avec tous les attributs de la classe grâce à Lombok.
+ * - @AllArgsConstructor : Génère un constructeur avec tous les attributs de la classe grâce à Lombok, facilitant l'injection des dépendances.
+ *
+ * L'utilisation de ces configurations garantit une approche sécurisée et extensible pour la gestion
+ * de l'authentification dans l'application.
  */
+
 package com.amoura.book.config;
 
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -65,4 +77,23 @@ public class BeanConfig {
         // Retourne un encodeur de mots de passe basé sur BCrypt
         return new BCryptPasswordEncoder();
     }
+
+    /**
+     * Bean pour le gestionnaire d'authentification (AuthenticationManager).
+     *
+     * L'`AuthenticationManager` est utilisé pour traiter l'authentification des utilisateurs
+     * en vérifiant les identifiants fournis. Il délègue l'authentification aux
+     * `AuthenticationProvider` configurés, tels que le `DaoAuthenticationProvider` dans le cas
+     * d'une authentification basée sur les identifiants en base de données.
+     *
+     * @param config l'instance `AuthenticationConfiguration` qui fournit le `AuthenticationManager`
+     * @return une instance de `AuthenticationManager`
+     * @throws Exception en cas d'erreur lors de l'obtention du `AuthenticationManager`
+     */
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        // Retourne le gestionnaire d'authentification configuré
+        return config.getAuthenticationManager();
+    }
+
 }
