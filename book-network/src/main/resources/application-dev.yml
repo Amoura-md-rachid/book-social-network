@@ -1,12 +1,13 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/book_social_network  # L'URL de connexion à la base de données PostgreSQL, spécifiant le nom d'hôte, le port et la base de données cible
+    url: jdbc:postgresql://localhost:5432/book_social_network  # L'URL de connexion à la base de données PostgreSQL, spécifiant le nom d'hôte, le port et la base de données cible (utilisez le nom du container Docker ici, pas localhost)
+    username: username  # Nom d'utilisateur pour la connexion à la base de données
     password: password  # Le mot de passe de l'utilisateur de la base de données, nécessaire pour authentifier l'accès
     driver-class-name: org.postgresql.Driver  # Spécifie le driver JDBC pour PostgreSQL afin que l'application puisse se connecter à la base de données
 
   jpa:
     hibernate:
-      ddl-auto: update  # Définit la stratégie de gestion des schémas de la base de données (ici 'update') pour que Hibernate mette à jour les tables en fonction des entités sans les recréer
+      ddl-auto: create-drop  # Définit la stratégie de gestion des schémas de la base de données (ici 'update') pour que Hibernate mette à jour les tables en fonction des entités sans les recréer
     show-sql: false  # Désactive l'affichage des requêtes SQL dans la console (utile en production pour limiter les logs)
     properties:
       hibernate:
@@ -14,27 +15,29 @@ spring:
     database: postgresql  # Spécifie le type de base de données pour aider Hibernate à adapter certaines opérations spécifiques à PostgreSQL
     database-platform: org.hibernate.dialect.PostgreSQLDialect  # Définit le dialecte Hibernate pour PostgreSQL, afin d'optimiser la génération des requêtes SQL pour cette base de données
 
-mail:
-  host: localhost  # L'adresse du serveur de messagerie (ici en local)
-  port: 1025  # Port du serveur de messagerie SMTP, configuré pour écouter sur le port 1025 (exemple souvent utilisé en développement)
-  username: amoura  # Nom d'utilisateur pour l'authentification auprès du serveur de messagerie
-  password: amoura  # Mot de passe de l'utilisateur pour le serveur de messagerie
-  properties:
-    mail:
-      smtp:
-        trust: "*"  # Définit les hôtes de confiance pour les connexions SMTP (ici tous les hôtes sont acceptés avec "*")
-        auth: true  # Active l'authentification SMTP pour garantir une connexion sécurisée
-        starttls:
-          enable: true  # Active la couche de sécurité STARTTLS pour une connexion chiffrée au serveur SMTP
-        connectiontimeout: 5000  # Définit le délai (en millisecondes) pour établir une connexion SMTP
-        timeout: 3000  # Définit le délai d'attente pour les opérations SMTP avant l'expiration
-        writetimeout: 5000  # Spécifie le délai d'attente pour l'écriture des données dans le flux de sortie SMTP
+  mail:
+    host: localhost  # L'adresse du serveur de messagerie (ici en local, à adapter si vous utilisez un serveur de messagerie externe)
+    port: 9092  # Port du serveur de messagerie SMTP, configuré pour écouter sur le port 1025 (exemple souvent utilisé en développement)
+    username: amoura  # Nom d'utilisateur pour l'authentification auprès du serveur de messagerie
+    password: amoura  # Mot de passe de l'utilisateur pour le serveur de messagerie
+    properties:
+      mail:
+        smtp:
+          trust: "*"  # Définit les hôtes de confiance pour les connexions SMTP (ici tous les hôtes sont acceptés avec "*")
+          auth: true  # Active l'authentification SMTP pour garantir une connexion sécurisée
+          starttls:
+            enable: true  # Active la couche de sécurité STARTTLS pour une connexion chiffrée au serveur SMTP
+          connectiontimeout: 5000  # Définit le délai (en millisecondes) pour établir une connexion SMTP
+          timeout: 3000  # Définit le délai d'attente pour les opérations SMTP avant l'expiration
+          writetimeout: 5000  # Spécifie le délai d'attente pour l'écriture des données dans le flux de sortie SMTP
 
 application:
   security:
     jwt:
-      secret-key: nHfrJ1V2k0zP1Ac7JXmZ5E2xYBml1kYlK3H+le5N7CQ=
-      expiration: 8640000
+      secret-key: nHfrJ1V2k0zP1Ac7JXmZ5E2xYBml1kYlK3H+le5N7CQ=  # Clé secrète pour la signature des JWT, à sécuriser (en production, il vaut mieux utiliser une variable d'environnement)
+      expiration: 8640000  # Durée d'expiration du JWT en millisecondes (ici 24h)
   mailing:
     frontend:
-      activation-url: http://localhost:4200/activate-accounte
+      activation-url: http://localhost:4200/activate-accounte  # URL d'activation de compte, à adapter selon l'environnement de production
+server:
+  port: 9090  # Port sur lequel le serveur Spring Boot écoute

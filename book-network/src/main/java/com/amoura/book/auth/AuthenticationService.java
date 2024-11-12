@@ -80,7 +80,7 @@ public class AuthenticationService {
         emailService.sendEmail(
                 user.getEmail(),
                 user.fullName(),
-                EmailTemplateName.AVTICATE_ACOUNT,
+                EmailTemplateName.ACTIVATE_ACCOUNT,
                 activationUrl,
                 newToken,
                 "Account activation"

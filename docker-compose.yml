@@ -19,8 +19,8 @@ services:
     container_name: mail-dev-bsn
     image: maildev/maildev
     ports:
-      - 1080:1080
-      - 1025:1025
+      - 9091:1080
+      - 9092:1025
 
 networks:
   spring-demo:

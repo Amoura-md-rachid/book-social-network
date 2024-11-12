@@ -60,7 +60,7 @@ public class EmailService {
             templateName = "confirm-email";
         } else {
             // Utilise le nom du template spécifié
-            templateName = emailTemplate.name();
+            templateName = emailTemplate.getName();;
         }
 
         // Création d'un message MIME (email au format HTML)
