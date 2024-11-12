@@ -11,11 +11,16 @@ import com.amoura.book.user.UserRepository;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -35,6 +40,7 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final EmailService emailService;
+    private final AuthenticationManager authenticationManager;
 
     @Value("${application.mailing.frontend.activation-url}")
     private String activationUrl;
@@ -114,8 +120,12 @@ public class AuthenticationService {
     /**
      * Génère un code d'activation numérique de la longueur spécifiée.
      *
-     * @param length Longueur du code d'activation.
-     * @return Code d'activation généré.
+     * Cette méthode crée un code d'activation composé uniquement de chiffres
+     * en utilisant un générateur de nombres aléatoires sécurisés (`SecureRandom`).
+     * Le code d'activation est utilisé pour la validation des comptes utilisateurs.
+     *
+     * @param length Longueur du code d'activation à générer.
+     * @return Un code d'activation numérique sous forme de chaîne de caractères.
      */
     private String generateActivationCode(int length) {
         // Caractères numériques autorisés dans le code d'activation
@@ -131,4 +141,81 @@ public class AuthenticationService {
 
         return codeBuilder.toString();
     }
+
+
+
+    /**
+     * Authentifie un utilisateur et génère un jeton JWT en cas de succès.
+     *
+     * Cette méthode utilise le `AuthenticationManager` pour valider les
+     * informations d'identification fournies par l'utilisateur. Si l'authentification
+     * est réussie, elle génère un jeton JWT contenant les informations utilisateur.
+     *
+     * @param request Objet contenant les informations d'identification de l'utilisateur
+     *                (email et mot de passe).
+     * @return Un objet `AuthenticationResponse` contenant le jeton JWT généré.
+     *
+     */
+    public AuthenticationResponse authenticate(AuthenticationRequest request) {
+        // Authentification de l'utilisateur avec email et mot de passe
+        var auth = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.getEmail(),
+                        request.getPassword()
+                )
+        );
+
+        // Récupération de l'utilisateur authentifié
+        var user = (User) auth.getPrincipal();
+
+        // Création des claims JWT avec des informations utilisateur personnalisées
+        var claims = new HashMap<String, Object>();
+        claims.put("fullName", user.fullName());
+
+        // Génération du jeton JWT
+        var jwtToken = jwtService.generateToken(claims, user);
+
+        // Retourne la réponse d'authentification contenant le jeton
+        return AuthenticationResponse.builder()
+                .token(jwtToken)
+                .build();
+    }
+
+
+    /**
+     * Active un compte utilisateur en utilisant un token d'activation.
+     *
+     * Cette méthode vérifie si le token d'activation est valide et s'il n'est pas expiré.
+     * Si le token est valide, le compte utilisateur est activé (enabled).
+     * Si le token est expiré, un nouvel email de validation est envoyé à l'utilisateur.
+     *
+     * @param token Le token d'activation à valider.
+     * @throws MessagingException Si une erreur se produit lors de l'envoi de l'email.
+     * @throws RuntimeException Si le token est invalide ou expiré.
+     */
+    @Transactional
+    public void activateAccount(String token) throws MessagingException {
+        // Recherche du token dans la base de données
+        Token savedToken = tokenRepository.findByToken(token)
+                .orElseThrow(() -> new RuntimeException("Invalid token"));
+
+        // Vérification de l'expiration du token
+        if (LocalDateTime.now().isAfter(savedToken.getExpiredAt())) {
+            sendValidationEmail(savedToken.getUser());
+            throw new RuntimeException("Activation token has expired. A new token has been sent to the same email address");
+        }
+
+        // Recherche de l'utilisateur lié au token
+        var user = userRepository.findById(savedToken.getUser().getId())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        // Activation du compte utilisateur
+        user.setEnabled(true);
+        userRepository.save(user);
+
+        // Mise à jour de la validation du token
+        savedToken.setValidatAt(LocalDateTime.now());
+        tokenRepository.save(savedToken);
+    }
+
 }

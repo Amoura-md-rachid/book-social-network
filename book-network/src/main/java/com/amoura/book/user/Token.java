@@ -20,7 +20,7 @@ public class Token {
     private String token;
     private LocalDateTime createdAt;
     private LocalDateTime expiredAt;
-    private LocalDateTime validateAt;
+    private LocalDateTime validatAt;
 
 
     @ManyToOne
