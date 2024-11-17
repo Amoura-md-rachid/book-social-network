@@ -1,5 +1,7 @@
 package com.amoura.book.user;
 
+import com.amoura.book.book.Book;
+import com.amoura.book.history.BookTransactionHistory;
 import com.amoura.book.role.Role;
 import jakarta.persistence.*;
 import lombok.*;
@@ -17,7 +19,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 
-@Getter @Setter @Builder @AllArgsConstructor @NoArgsConstructor
+@Getter
+@Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "_user")
 @EntityListeners(AuditingEntityListener.class)
@@ -35,8 +41,14 @@ public class User implements UserDetails, Principal {
     private boolean enabled;
     private boolean accountLocked;
 
-    @ManyToMany(fetch =FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER)
     private List<Role> roles;
+
+    @OneToMany(mappedBy = "owner")
+    private List<Book> books;
+
+    @OneToMany(mappedBy = "user")
+    private List<BookTransactionHistory> histories;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
@@ -89,7 +101,7 @@ public class User implements UserDetails, Principal {
         return getEmail();
     }
 
-    public String fullName(){
+    public String fullName() {
         return getFirstName() + " " + getLastName();
     }
 }
