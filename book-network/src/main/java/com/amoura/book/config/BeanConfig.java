@@ -23,6 +23,7 @@ package com.amoura.book.config;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -94,6 +95,29 @@ public class BeanConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         // Retourne le gestionnaire d'authentification configuré
         return config.getAuthenticationManager();
+    }
+
+    /**
+     * Bean pour l'audit des entités (`AuditorAware<Integer>`).
+     *
+     * Ce bean est utilisé pour fournir une instance de `AuditorAware` à Spring Data JPA,
+     * permettant de suivre l'utilisateur actuel pour les opérations d'audit sur les entités.
+     * Les annotations d'audit telles que `@CreatedBy` et `@LastModifiedBy` utiliseront ce bean
+     * pour remplir automatiquement les informations sur l'utilisateur responsable des modifications.
+     *
+     * ### Fonctionnement :
+     * - Lors de l'enregistrement ou de la mise à jour d'une entité, Spring Data JPA interroge
+     *   ce bean pour obtenir l'ID de l'utilisateur actuellement connecté.
+     * - Si un utilisateur est authentifié, son ID est retourné et stocké dans les champs `createdBy`
+     *   ou `lastModifiedBy` des entités.
+     * - Si aucun utilisateur n'est authentifié, `Optional.empty()` est retourné, et aucun ID n'est défini.
+     *
+     * @return une instance de `AuditorAware<Integer>`, implémentée par la classe `ApplicationAuditAware`.
+     */
+    @Bean
+    public AuditorAware<Integer> auditorAware() {
+        // Retourne une nouvelle instance de `ApplicationAuditAware` pour gérer l'audit des entités
+        return new ApplicationAuditAware();
     }
 
 }

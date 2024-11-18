@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.scheduling.annotation.EnableAsync;
 
 @SpringBootApplication
-@EnableJpaAuditing
+@EnableJpaAuditing(auditorAwareRef = "auditorAware") // : Indique le nom du bean (auditorAware) utilisé pour déterminer l'utilisateur connecté.
 @EnableAsync
 public class BookNetworkApiApplication {
 
