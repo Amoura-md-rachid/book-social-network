@@ -1,6 +1,7 @@
 package com.amoura.book.book;
 
 
+import com.amoura.book.common.PageResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
@@ -35,4 +36,15 @@ public class BookController {
                 .map(bookMapper::toBookResponse)
                 .orElseThrow(() -> new EntityNotFoundException("No book found with ID:: " + bookId));
     }
+
+    @GetMapping
+    public ResponseEntity<PageResponse<BookResponse>> findAllBooks(
+            @RequestParam(name = "page", defaultValue = "0", required = false) int page,
+            @RequestParam(name = "size", defaultValue = "10", required = false) int size,
+            Authentication connectedUser
+    ) {
+        return ResponseEntity.ok(service.findAllBooks(page, size, connectedUser));
+    }
+
+
 }
