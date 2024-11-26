@@ -2,6 +2,8 @@ package com.amoura.book.book;
 
 
 import com.amoura.book.common.PageResponse;
+import com.amoura.book.history.BookTransactionHistory;
+import com.amoura.book.history.BookTransationHistoryRespository;
 import com.amoura.book.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -19,6 +21,7 @@ public class BookService {
 
     private final BookRepository bookRepository;
     private final BookMapper bookMapper;
+    private final BookTransationHistoryRespository transationHistoryRespository;
 
     public Integer save(BookRequest request, Authentication connectedUser) {
         User user = ((User) connectedUser.getPrincipal());
@@ -99,4 +102,22 @@ public class BookService {
         );
     }
 
+    public PageResponse<BorrowedBookResponse> findAllBorrowedBooks(int page, int size, Authentication connectedUser) {
+        User user = ((User) connectedUser.getPrincipal());
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
+        Page<BookTransactionHistory> allBorrorwedBooks = transationHistoryRespository.findAllBorowedBooks(pageable, user.getId());
+        List<BorrowedBookResponse> bookResponse = allBorrorwedBooks.stream()
+                .map(bookMapper::toBorrowedBookResponse)
+                .toList();
+
+        return new PageResponse<>(
+                bookResponse,
+                allBorrorwedBooks.getNumber(),
+                allBorrorwedBooks.getSize(),
+                allBorrorwedBooks.getTotalElements(),
+                allBorrorwedBooks.getTotalPages(),
+                allBorrorwedBooks.isFirst(),
+                allBorrorwedBooks.isLast()
+        );
+    }
 }
