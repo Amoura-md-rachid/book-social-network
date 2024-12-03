@@ -39,5 +39,8 @@ application:
   mailing:
     frontend:
       activation-url: http://localhost:4200/activate-accounte  # URL d'activation de compte, à adapter selon l'environnement de production
+  file:
+    uploads:
+      photos-output-path: ./uploads
 server:
   port: 9090  # Port sur lequel le serveur Spring Boot écoute

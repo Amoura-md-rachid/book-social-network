@@ -3,6 +3,7 @@ package com.amoura.book.book;
 
 import com.amoura.book.common.PageResponse;
 import com.amoura.book.exception.OperationNotPermittedException;
+import com.amoura.book.file.FileStorageService;
 import com.amoura.book.history.BookTransactionHistory;
 import com.amoura.book.history.BookTransationHistoryRespository;
 import com.amoura.book.user.User;
@@ -14,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Objects;
@@ -25,6 +27,7 @@ public class BookService {
     private final BookRepository bookRepository;
     private final BookMapper bookMapper;
     private final BookTransationHistoryRespository transactionHistoryRepository;
+    private final FileStorageService fileStorageService;
 
     public Integer save(BookRequest request, Authentication connectedUser) {
         User user = ((User) connectedUser.getPrincipal());
@@ -282,7 +285,6 @@ public class BookService {
         }
 
         User user = (User) connectedUser.getPrincipal();
-
         if (Objects.equals(book.getOwner(), user.getId())) {
             throw new OperationNotPermittedException("You cannot borrow or return your own book");
         }
@@ -295,4 +297,13 @@ public class BookService {
     }
 
 
+    public void uploadBookCoverPicture(MultipartFile file, Authentication connectedUser, Integer bookId) {
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(()-> new EntityNotFoundException("No book found with ID::"+ bookId));
+        User user = ((User)  connectedUser.getPrincipal());
+        var bookCover = fileStorageService.saveFile(file, String.valueOf(user.getId()));
+        book.setBookCover(bookCover);
+        bookRepository.save(book);
+
+    }
 }
