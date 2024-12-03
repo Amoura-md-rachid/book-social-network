@@ -1,5 +1,6 @@
 package com.amoura.book.handler;
 
+import com.amoura.book.exception.OperationNotPermittedException;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import jakarta.mail.MessagingException;
 import org.springframework.http.ResponseEntity;
@@ -95,15 +96,15 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Gère les exceptions `MessagingException` (erreurs liées aux services de messagerie).
+     * Gère les exceptions `OperationNotPermittedException` (opérations non autorisées).
      *
-     * @param exp Instance de `MessagingException`.
+     * @param exp Instance de `OperationNotPermittedException`.
      * @return Réponse HTTP avec une description de l'erreur.
      */
-    @ExceptionHandler(MessagingException.class)
-    public ResponseEntity<ExceptionResponse> handleException(MessagingException exp) {
+    @ExceptionHandler(OperationNotPermittedException.class)
+    public ResponseEntity<ExceptionResponse> handleException(OperationNotPermittedException exp) {
         return ResponseEntity
-                .status(INTERNAL_SERVER_ERROR)
+                .status(BAD_REQUEST)
                 .body(
                         ExceptionResponse.builder()
                                 .error(exp.getMessage())

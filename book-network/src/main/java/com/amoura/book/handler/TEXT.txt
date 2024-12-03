@@ -1,0 +1,33 @@
+/**
+     * Gère les exceptions `ActivationTokenException` (problème lors de l'activation d'un compte).
+     *
+     * @param exp Instance de `ActivationTokenException`.
+     * @return Réponse HTTP avec une description de l'erreur.
+     */
+    @ExceptionHandler(ActivationTokenException.class)
+    public ResponseEntity<ExceptionResponse> handleException(ActivationTokenException exp) {
+        return ResponseEntity
+                .status(BAD_REQUEST)
+                .body(
+                        ExceptionResponse.builder()
+                                .error(exp.getMessage())
+                                .build()
+                );
+    }
+
+    /**
+     * Gère les exceptions `OperationNotPermittedException` (opération non autorisée).
+     *
+     * @param exp Instance de `OperationNotPermittedException`.
+     * @return Réponse HTTP avec une description de l'erreur.
+     */
+    @ExceptionHandler(OperationNotPermittedException.class)
+    public ResponseEntity<ExceptionResponse> handleException(OperationNotPermittedException exp) {
+        return ResponseEntity
+                .status(BAD_REQUEST)
+                .body(
+                        ExceptionResponse.builder()
+                                .error(exp.getMessage())
+                                .build()
+                );
+    }
