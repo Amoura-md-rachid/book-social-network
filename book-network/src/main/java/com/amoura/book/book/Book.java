@@ -1,6 +1,7 @@
 package com.amoura.book.book;
 
 import com.amoura.book.common.BaseEntity;
+import com.amoura.book.feedback.Feedback;
 import com.amoura.book.history.BookTransactionHistory;
 import com.amoura.book.user.User;
 import jakarta.persistence.*;
