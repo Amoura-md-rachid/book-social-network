@@ -12,20 +12,16 @@ import java.util.Optional;
  * Classe d'implémentation de {@link AuditorAware} qui permet d'obtenir l'ID de l'utilisateur actuellement connecté
  * pour les opérations d'audit (création et modification des entités).
  */
-public class ApplicationAuditAware implements AuditorAware<Integer> {
+public class ApplicationAuditAware implements AuditorAware<String> {
 
     /**
      * Cette méthode permet de récupérer l'ID de l'utilisateur actuellement authentifié.
-     * <p>
-     * Si l'utilisateur n'est pas authentifié ou s'il s'agit d'une authentification anonyme,
-     * la méthode retourne {@code Optional.empty()}.
-     * Sinon, elle retourne l'ID de l'utilisateur.
      *
-     * @return Un {@link Optional} contenant l'ID de l'utilisateur connecté, ou {@code Optional.empty()} si
-     * l'utilisateur n'est pas authentifié.
+     * @return Un {@link Optional} contenant l'ID de l'utilisateur connecté en tant que {@code String},
+     * ou {@code Optional.empty()} si l'utilisateur n'est pas authentifié.
      */
     @Override
-    public Optional<Integer> getCurrentAuditor() {
+    public Optional<String> getCurrentAuditor() {
         // Récupération de l'authentification actuelle depuis le SecurityContext
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -39,7 +35,8 @@ public class ApplicationAuditAware implements AuditorAware<Integer> {
         // Récupération de l'objet User depuis le contexte de sécurité
         User userPrincipal = (User) authentication.getPrincipal();
 
-        // Retourne l'ID de l'utilisateur
-        return Optional.ofNullable(userPrincipal.getId());
+        //  Convertir l'ID en String avant de le retourner
+        return Optional.ofNullable(userPrincipal.getId())
+                .map(String::valueOf);
     }
 }

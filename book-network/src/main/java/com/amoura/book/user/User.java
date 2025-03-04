@@ -44,7 +44,7 @@ public class User implements UserDetails, Principal {
     @ManyToMany(fetch = FetchType.EAGER)
     private List<Role> roles;
 
-    @OneToMany(mappedBy = "owner")
+    @OneToMany(mappedBy = "owner",fetch = FetchType.LAZY)
     private List<Book> books;
 
     @OneToMany(mappedBy = "user")
@@ -52,7 +52,8 @@ public class User implements UserDetails, Principal {
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
-    private LocalDate createdDAte;
+    private LocalDate createdDate;
+
     @LastModifiedDate
     @Column(insertable = true)
     private LocalDate lastModifiedDate;
@@ -73,7 +74,7 @@ public class User implements UserDetails, Principal {
 
     @Override
     public String getUsername() {
-        return "";
+        return email;
     }
 
     @Override

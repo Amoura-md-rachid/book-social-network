@@ -18,7 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Tag(name = "Book")
 public class BookController {
 
-    private BookService service;
+    private final BookService service;
     private final BookMapper bookMapper;
     private final BookRepository bookRepository;
 

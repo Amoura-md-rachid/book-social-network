@@ -14,7 +14,7 @@ spring:
         format_sql: true  # Active le formatage du SQL pour rendre les requêtes SQL générées par Hibernate plus lisibles
     database: postgresql  # Spécifie le type de base de données pour aider Hibernate à adapter certaines opérations spécifiques à PostgreSQL
     database-platform: org.hibernate.dialect.PostgreSQLDialect  # Définit le dialecte Hibernate pour PostgreSQL, afin d'optimiser la génération des requêtes SQL pour cette base de données
-
+#    open-in-view: false #Désactive l'option open-in-view
   mail:
     host: localhost  # L'adresse du serveur de messagerie (ici en local, à adapter si vous utilisez un serveur de messagerie externe)
     port: 9092  # Port du serveur de messagerie SMTP, configuré pour écouter sur le port 1025 (exemple souvent utilisé en développement)
