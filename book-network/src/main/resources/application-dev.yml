@@ -7,7 +7,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update  # Définit la stratégie de gestion des schémas de la base de données (ici 'update') pour que Hibernate mette à jour les tables en fonction des entités sans les recréer
+      ddl-auto:  update  # Définit la stratégie de gestion des schémas de la base de données (ici 'update') pour que Hibernate mette à jour les tables en fonction des entités sans les recréer
     show-sql: false  # Désactive l'affichage des requêtes SQL dans la console (utile en production pour limiter les logs)
     properties:
       hibernate:

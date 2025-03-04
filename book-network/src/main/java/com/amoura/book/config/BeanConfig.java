@@ -115,7 +115,7 @@ public class BeanConfig {
      * @return une instance de `AuditorAware<Integer>`, implémentée par la classe `ApplicationAuditAware`.
      */
     @Bean
-    public AuditorAware<Integer> auditorAware() {
+    public AuditorAware<String> auditorAware() {
         // Retourne une nouvelle instance de `ApplicationAuditAware` pour gérer l'audit des entités
         return new ApplicationAuditAware();
     }
